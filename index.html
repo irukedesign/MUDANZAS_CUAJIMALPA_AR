@@ -1,0 +1,154 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Mudanzas Cuajimalpa AR</title>
+
+  <!-- A-Frame -->
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+
+  <!-- MindAR -->
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+  <style>
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: Arial, sans-serif;
+    }
+
+    #instructions {
+      position: fixed;
+      top: 20px;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      color: white;
+      font-size: 16px;
+      z-index: 10;
+      pointer-events: none;
+      text-shadow: 0 2px 5px #000;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="instructions">
+    Apunta tu cámara al logotipo del llavero
+  </div>
+
+  <a-scene
+    mindar-image="imageTargetSrc: ./assets/targets.mind; autoStart: true; uiLoading: no; uiScanning: no; uiError: no;"
+    color-space="sRGB"
+    renderer="colorManagement: true, physicallyCorrectLights: true"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false">
+
+    <a-assets>
+      <a-asset-item
+        id="truckModel"
+        src="./assets/camioneta.glb">
+      </a-asset-item>
+    </a-assets>
+
+    <a-camera
+      position="0 0 0"
+      look-controls="enabled: false">
+    </a-camera>
+
+    <!-- Reconocimiento del logotipo -->
+    <a-entity mindar-image-target="targetIndex: 0">
+
+      <!-- Grupo de levitación -->
+      <a-entity
+        id="levitation"
+        position="0 0 0.15"
+        animation="
+          property: position;
+          from: 0 0 0.15;
+          to: 0 0 0.30;
+          dur: 1800;
+          dir: alternate;
+          loop: true;
+          easing: easeInOutSine">
+
+        <!-- Grupo de rotación -->
+        <a-entity
+          id="rotation"
+          animation="
+            property: rotation;
+            from: 0 0 0;
+            to: 0 360 0;
+            dur: 8000;
+            loop: true;
+            easing: linear">
+
+          <a-gltf-model
+            id="truck"
+            src="#truckModel"
+            class="clickable"
+            scale="0.5 0.5 0.5"
+            position="0 0 0">
+          </a-gltf-model>
+
+        </a-entity>
+      </a-entity>
+
+    </a-entity>
+  </a-scene>
+
+  <script>
+    const WHATSAPP_URL =
+      "https://wa.me/message/4HM2O4WWLMIIP1";
+
+    const scene = document.querySelector("a-scene");
+    const truck = document.querySelector("#truck");
+    const target = document.querySelector(
+      '[mindar-image-target]'
+    );
+
+    // Detectar cuando se toca o hace clic sobre la camioneta
+    scene.addEventListener("renderstart", () => {
+
+      const canvas = scene.canvas;
+      const raycaster = new THREE.Raycaster();
+      const pointer = new THREE.Vector2();
+
+      canvas.addEventListener("pointerdown", (event) => {
+
+        if (!target.object3D.visible) return;
+        if (!truck.object3D || !truck.object3D.children.length) return;
+
+        const rect = canvas.getBoundingClientRect();
+
+        pointer.x =
+          ((event.clientX - rect.left) / rect.width) * 2 - 1;
+
+        pointer.y =
+          -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+        raycaster.setFromCamera(pointer, scene.camera);
+
+        const intersections = raycaster.intersectObject(
+          truck.object3D,
+          true
+        );
+
+        if (intersections.length > 0) {
+          window.location.href = WHATSAPP_URL;
+        }
+
+      });
+
+    });
+  </script>
+
+</body>
+</html>
