@@ -35,7 +35,15 @@
       pointer-events: none;
       text-shadow: 0 2px 5px #000;
     }
-  </style>
+
+    video {
+      z-index: 0 !important;
+    }
+
+    a-scene canvas {
+      z-index: 1 !important;
+    }
+</style>
 </head>
 
 <body>
@@ -45,7 +53,7 @@
   </div>
 
   <a-scene
-    mindar-image="imageTargetSrc: ./assets/targets.mind; autoStart: true; uiLoading: no; uiScanning: no; uiError: yes;"
+    mindar-image="imageTargetSrc: ./assets/targets.mind; autoStart: true; uiLoading: no; uiScanning: no; uiError: no;"
     color-space="sRGB"
     renderer="colorManagement: true, physicallyCorrectLights: true"
     vr-mode-ui="enabled: false"
